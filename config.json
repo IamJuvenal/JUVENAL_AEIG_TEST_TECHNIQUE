@@ -1,0 +1,34 @@
+{
+    "start_date": "2025-06-18 00:59",
+    "end_date": "2025-07-18 00:59",
+    "content_types": {
+        "articles": 0,
+        "posts": 100,
+        "tweets": 0
+    },
+    "max_results": 1000,
+    "locations": [
+        "BF",
+        "BJ",
+        "CI",
+        "CV",
+        "GH",
+        "GM",
+        "GN",
+        "GW",
+        "LR",
+        "ML",
+        "MR",
+        "NE",
+        "NG",
+        "SL",
+        "SN",
+        "TG"
+    ],
+    "language": [
+        "de"
+    ],
+    "topics": [
+        "3"
+    ]
+}
