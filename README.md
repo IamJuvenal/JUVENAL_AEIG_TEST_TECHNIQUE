@@ -94,6 +94,11 @@ Les clés API (GNews, NewsAPI, Reddit, etc.) sont demandées lors de la configur
   "NewsAPI": "2b92ea76285e428a99c8ebe7dba3e9c3"
 }
 
+
+
+Limite du projet
+
+Pour le moment, les informations sont stockées en locale. Nous continuons de developper la solution pour que les infos soient envoyées vers airtable. Nous pourrions faire un nouveau push sur votre demande qui contiendra cette fonctionnalité.
 ---
 
 © 2025 — Développé par Juvenal KPODJADAN
