@@ -107,6 +107,21 @@ def demander_types_de_contenus():
     return repartition
 
 
+def demander_sources_articles():
+    print(
+        "\nSouhaitez-vous spécifier les sources à utiliser pour la collecte d’articles ?"
+    )
+    print("1. GNews")
+    print("2. NewsAPI")
+    print("3. Les deux (par défaut)")
+    print("Appuyez sur Entrée sans rien taper pour sélectionner toutes les sources.")
+
+    choix = input("→ ").strip()
+    mapping = {"1": ["GNews"], "2": ["NewsAPI"], "3": ["GNews", "NewsAPI"]}
+
+    return mapping.get(choix, ["GNews", "NewsAPI"])
+
+
 def demander_nombre_de_resultats():
     while True:
         try:
@@ -623,6 +638,51 @@ def sauvegarder_config(config, fichier="config.json"):
         json.dump(config, f, indent=4, ensure_ascii=False)
 
 
+def obtenir_cle_api(source):
+    """
+    Demande à l'utilisateur une nouvelle clé API pour la source donnée
+    et la met à jour dans config.json.
+    """
+    print(f"\nLa clé API pour {source} est manquante ou invalide.")
+    nouvelle_cle = input(
+        f"Veuillez entrer une nouvelle clé API pour {source} : "
+    ).strip()
+
+    if not nouvelle_cle:
+        print("Aucune clé saisie. Abandon.")
+        return None
+
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        config = {}
+
+    if "api_keys" not in config:
+        config["api_keys"] = {}
+
+    config["api_keys"][source] = nouvelle_cle
+
+    with open("config.json", "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4, ensure_ascii=False)
+
+    print(f"Nouvelle clé enregistrée pour {source}.")
+    return nouvelle_cle
+
+
+def demander_reddit_credentials():
+    print("\n⚠️  Reddit credentials requis pour collecter des posts.")
+    creds = {}
+    creds["client_id"] = input("Client ID : ").strip()
+    creds["client_secret"] = input("Client Secret : ").strip()
+    creds["username"] = input("Nom d'utilisateur Reddit : ").strip()
+    creds["password"] = input("Mot de passe Reddit : ").strip()
+    creds["user_agent"] = input(
+        "User Agent (ex: script Python de veille Reddit) : "
+    ).strip()
+    return creds
+
+
 def initialiser_config():
     config = {}
 
@@ -631,6 +691,10 @@ def initialiser_config():
         d.strftime("%Y-%m-%d %H:%M") for d in demander_periode()
     ]
     config["content_types"] = demander_types_de_contenus()
+
+    if config["content_types"].get("articles", 0) > 0:
+        config["content_types"]["sources_articles"] = demander_sources_articles()
+
     config["max_results"] = demander_nombre_de_resultats()
 
     codes_mixte = demander_zones_geographiques()
@@ -638,6 +702,32 @@ def initialiser_config():
 
     config["language"] = demander_langues()
     config["topics"] = demander_sujets()
+
+    from utils import (
+        valider_reddit_credentials,
+    )  # à placer tout en haut si ta fonction est ailleurs
+
+    if config["content_types"].get("posts", 0) > 0:
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                ancienne_config = json.load(f)
+                reddit_creds = ancienne_config.get("reddit_credentials", {})
+        except FileNotFoundError:
+            reddit_creds = {}
+
+        if not valider_reddit_credentials(reddit_creds):
+            reddit_creds = demander_reddit_credentials()
+
+        config["reddit_credentials"] = reddit_creds
+
+    # Sauvegarde des anciennes clés API si présentes
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            ancienne_config = json.load(f)
+            if "api_keys" in ancienne_config:
+                config["api_keys"] = ancienne_config["api_keys"]
+    except FileNotFoundError:
+        pass
 
     # Sauvegarde
     sauvegarder_config(config)
