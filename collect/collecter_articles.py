@@ -2,7 +2,7 @@ import random
 import json
 import requests
 from init_config import obtenir_cle_api
-from storage.csv_writer import append_to_csv  # Tu dois avoir ce fichier avec FIELDNAMES
+from storage.csv_writer import append_to_csv
 
 
 def charger_config():

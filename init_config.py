@@ -125,7 +125,7 @@ def demander_sources_articles():
 def demander_nombre_de_resultats():
     while True:
         try:
-            print("\nCombien de résultats souhaitez-vous collecter au total ?")
+            print("\nCombien de résultats souhaitez-vous collecter pour chaque catégorie de contenu ?")
             nb = int(input("→ ").strip())
             if nb > 0:
                 return nb
